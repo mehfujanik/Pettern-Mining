@@ -1,0 +1,26 @@
+import pandas as pd
+import itertools
+from mlxtend.preprocessing import TransactionEncoder
+from mlxtend.frequent_patterns import fpgrowth
+import csv
+import time
+
+acc_list_of_arrays = []
+count=0
+with open('kosarak.csv', 'r') as file:
+    dataset = csv.reader(file, delimiter=' ')
+    for row in itertools.islice(dataset,10000):
+        temp = [element for element in row]
+        #temp = temp[:-1]
+        print(temp)
+        acc_list_of_arrays.append(temp)
+        count=count+1
+print(count)
+start_time = time.process_time()
+te = TransactionEncoder()
+te_ary = te.fit(acc_list_of_arrays).transform(acc_list_of_arrays)
+df = pd.DataFrame(te_ary, columns=te.columns_)
+print(df.head(20))
+result= fpgrowth(df, min_support=0.75, use_colnames=True)
+print(result)
+print((time.process_time() - start_time), "seconds")
